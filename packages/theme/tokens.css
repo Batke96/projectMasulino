@@ -1,0 +1,18 @@
+:root {
+  --bg: #f3efe6;
+  --surface: #fffdf8;
+  --ink: #1e1a16;
+  --muted: #5e574e;
+  --line: #e3dacb;
+  --accent: #0c6b66;
+  --accent-ink: #f4fffd;
+  --danger: #8d2c2c;
+  --danger-bg: #fdeeee;
+  --ok: #1d6a3a;
+  --ok-bg: #e8f6ee;
+  --warn: #8a5810;
+  --warn-bg: #fff3dd;
+  --font: "Avenir Next", "Segoe UI", sans-serif;
+  --radius: 0.8rem;
+  --shadow: 0 1px 2px rgb(30 26 22 / 6%);
+}

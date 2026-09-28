@@ -1,0 +1,45 @@
+{
+  "name": "@masulino/web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@masulino/contracts": "workspace:*",
+    "@masulino/core": "workspace:*",
+    "@masulino/database": "workspace:*",
+    "@masulino/i18n": "workspace:*",
+    "@masulino/indoor-play": "workspace:*",
+    "@masulino/notices": "workspace:*",
+    "@masulino/operations": "workspace:*",
+    "@masulino/reservations": "workspace:*",
+    "@masulino/workforce": "workspace:*",
+    "@masulino/theme": "workspace:*",
+    "@masulino/ui": "workspace:*",
+    "better-auth": "^1.7.6",
+    "drizzle-orm": "^0.45.1",
+    "next": "^16.1.6",
+    "pg": "^8.16.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2"
+  }
+}

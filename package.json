@@ -1,0 +1,50 @@
+{
+  "name": "masulino",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @masulino/web dev",
+    "build": "pnpm --filter @masulino/web build",
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "typecheck": "pnpm -r --if-present --parallel typecheck",
+    "test": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "test:e2e": "pnpm --filter @masulino/web e2e",
+    "boundaries": "node scripts/check-boundaries.mjs",
+    "db:generate": "tsx scripts/db-generate.ts",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:up": "tsx scripts/db-up.ts",
+    "bootstrap:owner": "tsx scripts/bootstrap-owner.ts"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@embedded-postgres/darwin-arm64",
+      "@embedded-postgres/darwin-x64",
+      "@embedded-postgres/linux-arm64",
+      "@embedded-postgres/linux-x64",
+      "esbuild",
+      "unrs-resolver"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.6.0",
+    "@types/pg": "^8.15.5",
+    "embedded-postgres": "18.1.0-beta.15",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^16.1.6",
+    "prettier": "^3.6.2",
+    "pg": "^8.16.3",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "vitest": "^3.2.4"
+  }
+}
