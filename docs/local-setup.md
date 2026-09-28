@@ -71,4 +71,4 @@ The `main` branch deploys through GitHub Actions after CI passes. One-time Verce
 - Vercel project region: `fra1`. The project config is `apps/web/vercel.json`.
 - Neon Postgres in the EU, preferably Frankfurt. Use the pooled URL for `DATABASE_URL`, `DATABASE_URL_AUTH`, and `DATABASE_URL_WORKER`. Use the direct URL for `DATABASE_URL_MIGRATE` only in a migration job, not in the Next.js runtime.
 - Create the three login roles from `scripts/roles.ts` before migrating. Do not give the app role `BYPASSRLS`.
-- Set `CRON_SECRET`. Vercel Cron calls `/api/cron/outbox` every five minutes.
+- Set `CRON_SECRET`. Vercel Cron calls `/api/cron/outbox` once a day at 08:00 UTC, which is the Hobby plan limit. Hobby may run it any time during that hour.

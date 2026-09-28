@@ -22,7 +22,7 @@ A fixture, guess, or old note is not an approved production rule. Record new dec
 - [x] Stage 0 Foundation — 28 September 2026. Login, two-tenant isolation, roles, RLS, audit, staff shell, and CI are in the repo. `pnpm test:integration` covered missing tenant context and cross-tenant reads. Playwright covered a permitted reception user reaching the daily plan.
 - [x] Stage 1 Internal staff booking — 28 September 2026. Staff confirm a booking, allocations commit with the reservation, and two concurrent last-slot requests produce one confirmation. `pnpm test:integration` (4 tests) and `pnpm test:e2e` (reception booking plus employee denial) passed. Reschedule rollback was added with Stage 2; combined-table overlap and the settings screen stay open below.
 - [x] Stage 2 Booking MVP — 28 September 2026. A guest can request a birthday booking, open only that booking through a secure link, and staff see it on the daily plan. Confirmation and reminder jobs write local previews. A failed delivery can be requeued. The preparation sheet and holiday notices are in place. `pnpm test:integration` 10 passed. `pnpm test:e2e` 3 passed. `pnpm build` succeeded. Production still rejects a fixture rule set.
-- [ ] Stage 3 Operations — workforce plan, time capture, checklists.
+- [x] Stage 3 Operations — 28 September 2026. An employee records availability and leave, a location manager publishes a weekly plan, phone and kiosk punches keep the original row, and assigned checklists can be completed. `pnpm test:integration` 14 passed (3 files). `pnpm test:e2e` 4 passed (40.0s). `pnpm build` compiled successfully. Break rules, leave types, and wages stay proposed. No payroll.
 - [ ] Stage 4 Customers and reporting — POS reconciliation, eligible marketing, surveys, optional loyalty.
 - [ ] Stage 5 Optimization — measured improvements, purchasing suggestions, reviewable AI.
 
@@ -84,7 +84,7 @@ Gate: simultaneous allocation tests pass; persistence works; no unapproved produ
 
 ## Stage 2 — Booking MVP
 
-Gate met on 28 September 2026. Stage 3 is not started. Staff and guest flows work against the published fixture rule set. A failed delivery is visible and recoverable. Production still refuses an incomplete rule set. Prices, deposits, cancellation wording, and customer-edit deadlines stay proposed.
+Gate met on 28 September 2026. Staff and guest flows work against the published fixture rule set. A failed delivery is visible and recoverable. Production still refuses an incomplete rule set. Prices, deposits, cancellation wording, and customer-edit deadlines stay proposed.
 
 Public routes stay visibly separate from `/app`. Guests do not create accounts. A booking number or email alone never reads or changes a reservation.
 
@@ -102,15 +102,15 @@ Public routes stay visibly separate from `/app`. Guests do not create accounts. 
 
 ## Stage 3 — Operations
 
-After Stage 2. Workforce and checklists. No payroll. No automatic supplier orders.
+Gate met on 28 September 2026. Workforce and checklists. No payroll. No automatic supplier orders. Break numbers, leave types, the Sunday publication preference, and wages stay proposed.
 
-- [ ] Recurring availability and leave, scoped to the employee
-- [ ] Proposed weekly plan from rules and bookings, including coverage, overlaps, and break constraints. A manager reviews and publishes it. Sunday publication is a tenant preference, not a hardcoded clock
-- [ ] Clock-in and clock-out on a shared device with individual verification, automatic locking, and no customer-history or wage access
-- [ ] Original time entries preserved. Corrections are requests. Approval is a separate action and is audited
-- [ ] Wage and compensation data stay behind `workforce.compensation.read`. Personnel-cost figures are labeled estimates
-- [ ] Assigned closing, cleaning, and maintenance checklists with completion evidence and open issues. Not a generic workflow engine
-- [ ] Tests for publish permission, cross-location denial, correction history, and a disabled workforce module rejecting new work
+- [x] Recurring availability and leave, scoped to the employee — 28 September 2026. `pnpm test:integration` passed “keeps availability on the employee and denies colleagues, locations, and tenants” (14 tests, 3 files). `pnpm test:e2e` saved Monday availability as the employee (4 passed, 40.0s).
+- [x] Proposed weekly plan from rules and bookings, including coverage, overlaps, and break constraints. A manager reviews and publishes it. Sunday publication is a tenant preference, not a hardcoded clock — 28 September 2026. `pnpm test:integration` passed “publishes one plan version and leaves the previous plan when publish is denied” (14 tests). `pnpm test:e2e` showed Entwurf to the manager, then the employee plan had no Entwurf and showed 09:00–17:00. Publication weekday 0 is stored. No Sunday cron.
+- [x] Clock-in and clock-out on a shared device with individual verification, automatic locking, and no customer-history or wage access — 28 September 2026. `pnpm test:e2e` at 768×1024 enrolled a hashed device token, submitted a single-use phone capability, and returned to “Tablet gesperrt”. The kiosk text has no Familie and no euro amount. The capability expires in five minutes and is not a PIN.
+- [x] Original time entries preserved. Corrections are requests. Approval is a separate action and is audited — 28 September 2026. `pnpm test:integration` passed “keeps the original punch and denies self-approval, shift leads, and a disabled module” (14 tests), including an UPDATE denied on `time_punches`. `pnpm test:e2e` kept the punch line text after “Korrektur anfragen”.
+- [x] Wage and compensation data stay behind `workforce.compensation.read`. Personnel-cost figures are labeled estimates — 28 September 2026. `pnpm test` 51 passed, including the policy matrix (33 tests in `policy.test.ts`). `pnpm test:e2e` showed the employee “Kein Zugriff” and the owner the sentences “Personalkosten sind eine Schätzung und keine Lohnabrechnung.” and “Es ist kein Stundensatz hinterlegt.” No euro amount. No rate is stored.
+- [x] Assigned closing, cleaning, and maintenance checklists with completion evidence and open issues. Not a generic workflow engine — 28 September 2026. `pnpm test:integration` passed “completes only an assigned checklist and rejects a disabled operations module” (14 tests). `pnpm test:e2e` showed “Erledigt: Tische geprüft” and the open issue “Fixture: Seife fehlt”.
+- [x] Tests for publish permission, cross-location denial, correction history, and a disabled workforce module rejecting new work — 28 September 2026. `pnpm test:integration` 14 passed (3 files, 47.10s). Also run: `pnpm lint` (0 errors, 4 existing warnings), `pnpm typecheck` (12 packages, all Done), `pnpm boundaries` (Package boundaries ok), `pnpm test` (51 passed), `pnpm test:e2e` (4 passed, 40.0s), `pnpm build` (Next.js compiled successfully in 7.0s).
 
 ## Stage 4 — Customers and reporting
 

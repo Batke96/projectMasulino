@@ -5,15 +5,12 @@ import { t } from "@masulino/i18n";
 import { Button, TextField } from "@masulino/ui";
 import { bindKioskAction, kioskPunchAction } from "../../server/workforce-actions";
 
-export function BindKioskForm() {
-  const [state, action, pending] = useActionState(bindKioskAction, null);
+export function BindKioskForm({ invalid }: { invalid?: boolean }) {
   return (
-    <form action={action} className="grid gap-3">
+    <form action={bindKioskAction} className="grid gap-3">
       <TextField label={t("kiosk.device")} name="token" required autoComplete="off" />
-      {state?.error ? <p className="text-sm text-danger">{t("kiosk.invalid")}</p> : null}
-      <Button type="submit" disabled={pending}>
-        {t("kiosk.bind")}
-      </Button>
+      {invalid ? <p className="text-sm text-danger">{t("kiosk.invalid")}</p> : null}
+      <Button type="submit">{t("kiosk.bind")}</Button>
     </form>
   );
 }

@@ -5,7 +5,12 @@ import { BindKioskForm, KioskPunchForm } from "./kiosk-forms";
 
 export const dynamic = "force-dynamic";
 
-export default async function KioskPage() {
+export default async function KioskPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ invalid?: string }>;
+}) {
+  const query = await searchParams;
   const token = (await cookies()).get("masulino_kiosk_device")?.value;
   const ready = token ? await kioskDeviceReady(token) : false;
   return (
@@ -15,7 +20,7 @@ export default async function KioskPage() {
         <h1 className="text-3xl font-semibold">{t("kiosk.locked")}</h1>
         <p className="mt-2 text-muted">{t("kiosk.lead")}</p>
       </div>
-      {ready ? <KioskPunchForm /> : <BindKioskForm />}
+      {ready ? <KioskPunchForm /> : <BindKioskForm invalid={query.invalid === "1"} />}
     </main>
   );
 }

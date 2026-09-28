@@ -15,7 +15,7 @@ Leave Vercel’s automatic Git deployments off for this project. If they are on,
 5. Copy the production values into the Vercel project. Use the names in `.env.example`. `DATABASE_URL`, `DATABASE_URL_AUTH`, and `DATABASE_URL_WORKER` are pooled Neon URLs. `BETTER_AUTH_URL` is the public `https` origin. Generate `BETTER_AUTH_SECRET` and `CRON_SECRET` with `openssl rand -base64 32`.
 6. Do not set `DATABASE_URL_MIGRATE` on the Next.js runtime. Migrations stay a separate, reviewed step.
 
-`apps/web/vercel.json` sets region `fra1` and calls `GET /api/cron/outbox` every five minutes. That schedule needs a Vercel plan that allows sub-daily cron. The cron request must send `Authorization: Bearer $CRON_SECRET`.
+`apps/web/vercel.json` sets region `fra1` and calls `GET /api/cron/outbox` once a day at 08:00 UTC so the project stays on the Vercel Hobby plan. Hobby may invoke that job any time between 08:00 and 08:59 UTC. The cron request must send `Authorization: Bearer $CRON_SECRET`.
 
 ## GitHub Actions secrets
 

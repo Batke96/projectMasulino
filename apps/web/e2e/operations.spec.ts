@@ -29,6 +29,18 @@ function totp(secret: string): string {
   return code.toString().padStart(6, "0");
 }
 
+async function enrollTotp(page: import("@playwright/test").Page) {
+  await expect(page.getByRole("heading", { name: "Zwei-Faktor einrichten" })).toBeVisible();
+  await page.getByLabel("Passwort").fill(password);
+  await page.getByRole("button", { name: "Zwei-Faktor einrichten" }).click();
+  const secretText = await page.getByText(/otpauth:/).innerText();
+  const secret = new URL(secretText.slice(secretText.indexOf("otpauth:"))).searchParams.get("secret");
+  expect(secret).toBeTruthy();
+  await page.getByLabel("Code").fill(totp(secret!));
+  await page.getByRole("button", { name: "Bestätigen" }).click();
+  await expect(page.getByRole("heading", { name: "Betrieb wählen" })).toBeVisible({ timeout: 20_000 });
+}
+
 async function login(page: import("@playwright/test").Page, email: string) {
   await page.goto("/login");
   await page.getByLabel("E-Mail").fill(email);
@@ -40,6 +52,8 @@ async function login(page: import("@playwright/test").Page, email: string) {
 test.use({ viewport: { width: 768, height: 1024 } });
 
 test("staff run availability, publishing, clock, and checklists without a spreadsheet", async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 768, height: 1024 });
   await login(page, "employee.masulino@example.test");
   await page.getByRole("link", { name: "Masulino Spielwelt" }).click();
   await page.getByRole("link", { name: "Berlin" }).click();
@@ -67,15 +81,7 @@ test("staff run availability, publishing, clock, and checklists without a spread
 
   await login(page, "manager.masulino@example.test");
   await page.getByRole("link", { name: "Masulino Spielwelt" }).click();
-  await expect(page.getByRole("heading", { name: "Zwei-Faktor einrichten" })).toBeVisible();
-  await page.getByLabel("Passwort").fill(password);
-  await page.getByRole("button", { name: "Zwei-Faktor einrichten" }).click();
-  const secretText = await page.getByText(/otpauth:/).innerText();
-  const secret = new URL(secretText.slice(secretText.indexOf("otpauth:"))).searchParams.get("secret");
-  expect(secret).toBeTruthy();
-  await page.getByLabel("Code").fill(totp(secret!));
-  await page.getByRole("button", { name: "Bestätigen" }).click();
-  await expect(page.getByRole("heading", { name: "Betrieb wählen" })).toBeVisible({ timeout: 20_000 });
+  await enrollTotp(page);
   await page.getByRole("link", { name: "Masulino Spielwelt" }).click();
   await page.getByRole("link", { name: "Berlin" }).click();
   await page.getByRole("link", { name: "Dienstplan" }).click();
@@ -94,6 +100,9 @@ test("staff run availability, publishing, clock, and checklists without a spread
   await page.goto("/app/masulino-spielwelt/berlin/workforce/plan");
   await expect(page.getByRole("heading", { name: "Entwurf" })).toHaveCount(0);
   await expect(page.getByText(/09:00.17:00/)).toBeVisible();
+  await page.goto("/app/masulino-spielwelt/berlin/workforce/compensation");
+  await expect(page.getByRole("heading", { name: "Kein Zugriff" })).toBeVisible();
+  await expect(page.getByText("Personalkosten sind eine Schätzung")).toHaveCount(0);
   await page.goto("/app/masulino-spielwelt/berlin/workforce");
   await page.getByRole("button", { name: "Code für das Tablet" }).click();
   const capability = (await page.getByTestId("punch-capability").innerText()).trim();
@@ -110,6 +119,15 @@ test("staff run availability, publishing, clock, and checklists without a spread
   await page.getByRole("button", { name: "Stempeln" }).click();
   await expect(page.getByText("Gespeichert. Das Tablet ist wieder gesperrt.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tablet gesperrt" })).toBeVisible();
+  await expect(page.getByText("Keine Kundendaten und keine Personalkosten.")).toBeVisible();
   await expect(page.getByText("Familie")).toHaveCount(0);
-  await expect(page.getByText("Personalkosten")).toHaveCount(0);
+  await expect(page.getByText(/€|EUR|\d+,\d{2}/)).toHaveCount(0);
+
+  await login(page, "owner.masulino@example.test");
+  await page.getByRole("link", { name: "Masulino Spielwelt" }).click();
+  await enrollTotp(page);
+  await page.goto("/app/masulino-spielwelt/berlin/workforce/compensation");
+  await expect(page.getByText("Personalkosten sind eine Schätzung und keine Lohnabrechnung.")).toBeVisible();
+  await expect(page.getByText("Es ist kein Stundensatz hinterlegt.")).toBeVisible();
+  await expect(page.getByText(/€|\d+,\d{2}/)).toHaveCount(0);
 });

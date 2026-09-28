@@ -241,12 +241,9 @@ export async function resolveIssueAction(formData: FormData) {
   revalidatePath("/app", "layout");
 }
 
-export async function bindKioskAction(
-  _state: { error?: string; ok?: boolean } | null,
-  formData: FormData,
-) {
+export async function bindKioskAction(formData: FormData) {
   const token = String(formData.get("token") ?? "").trim();
-  if (!(await kioskDeviceReady(token))) return { error: "invalid" };
+  if (!(await kioskDeviceReady(token))) redirect("/kiosk?invalid=1");
   (await cookies()).set("masulino_kiosk_device", token, {
     httpOnly: true,
     sameSite: "lax",
